@@ -1,0 +1,69 @@
+Seguir:
+-Seguir a usuarios recolectados
+-Monitorear un # y seguir a nuevos posteos
+-Monitorear una ubicacion y seguir a los nuevos posteos
+
+Unfollow:
+-Dejar de seguir a los usuarios recolectados
+-Dejar de seguir a los seguidos de la cuenta
+
+
+Auto-Like:
+-Likear los posteos recolectados
+-Monitorear un # y likear nuevos posteos
+-Monitorear una ubicación y likear nuevos posteos
+-Monitorear mi feed y likear nuevos posts
+
+Auto-Comentar:
+-Comentar los posteos recolectados
+-Comentar en la última foto de los usuarios recolectados
+-Monitorear un # y comentar nuevos posteos
+-Monitorear una ubicación y comentar nuevos posteos
+-Monitorear mi feed y comentar nuevos posts
+
+
+Recolección de usuarios y posteos:
+
+Recolección de user ID para seguir o dejar de seguir:
+-Búsqueda de #
+-User`s followers
+-User`s Following
+-Usuarios que likearon un post (recolecta usuarios que dieron like con el link del post)
+-Comentarios en un post
+-Por ubicación
+-Mi feed
+
+Recolección de photo ID para likear o comentar:
+-Búsqueda de #
+-Ubicación
+-Mi feed
+
+
+Follow Features:
+-Likear la última foto del usuario después de seguirlo
+-Skip a perfiles que ya me siguen
+
+
+Unfollow features:
+-Solo dejar de seguir a perfiles que NO me siguen
+-Excluir usuarios seguidos hace menos de x días
+
+
+ Autolike features:
+-Seguir al dueño de la foto despues del like
+-Superlike: Likear las últimas 3 fotos de la persona
+
+
+Auto-comment Features:
+-Like a la foto despues de comentar
+
+
+ Necesidades sin satisfacer:
+-Segmentar por sexo (interacción solo con mujeres o varones)
+-Interactuar con usuarios con más de x posteos (para evitar bots)
+-Interactuar con usuarios con x cantidad de seguidores
+-Interactuar con usuarios/fotos con x cantidad de likes
+
+
+Whitelist
+Necesitamos si o si!!
