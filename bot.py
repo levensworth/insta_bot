@@ -15,10 +15,10 @@ class UserBot(object):
 
     def __init__(self ,timeline_comment_path=None, whitelist= None, all_comments=None,
                 like_first=False,follow_followers=False, amount=0
-                , stop_words=['shop', 'store', 'free']):
+                , stop_words=['shop', 'store', 'free', 'buy', 'compra', 'comprar']):
 
         self.bot = instabot.Bot(stop_words=[])
-        self.bot.proxy = "free-nl.hide.me"
+#        self.bot.proxy = "free-nl.hide.me"
         self.bot.login()
         self.timeline_comment = timeline_comment_path
         self.all_comments = all_comments
@@ -132,8 +132,12 @@ class UserBot(object):
         return True
 
 
-    def like_user_feed(self, amount):
-        self.bot.like_timeline(amount=amount)
+    def like_user_feed(self, amount= 10):
+        try:
+            self.bot.like_timeline(amount=amount)
+            return True
+        except Exception as e:
+            return False
 
     def unfollow_all(self):
         self.bot.unfollow_everyone()
@@ -180,11 +184,13 @@ class UserBot(object):
 
 
     def like_lasts_media(self,user, amount = 1):
-        media = self.bot.get_user_medias(user_id=user)
-        for x in range(0, amount):
-            self.bot.like(media[x])
-        return True
-
+        try:
+            media = self.bot.get_user_medias(user_id=user)
+            for x in range(0, amount):
+                self.bot.like(media[x])
+            return True
+        except Exception as e:
+            return False
 
 
     def follow_type(self,follow_type =  'hashtag', amount = 1, user = None,
@@ -212,10 +218,10 @@ class UserBot(object):
 def job_1(): bot.freeze_following()
 
 def job_2( ):
-    hashtags = ["photography", "summer", "beer", "party"]
+    hashtags = ["emprender"]
     for tag in hashtags:
         bot.like_hashtag(tag)
-        bot.follow_type(follow_type="hashtag", hashtags = [tag], amount=30)
+        bot.follow_type(follow_type="hashtag", hashtags = [tag], amount=3)
 
 def job_3():
     locations=["recoleta", "palermo", "olivos", "beccar", " san isidro"]
@@ -236,11 +242,11 @@ def job_7():
     bot.comment_timeline()
 
 def job_8():
-    bot.like_user_feed(amount=25)
+    bot.like_user_feed(amount=4)
 def job_9():
     bot.comment_timeline()
 def job_10():
-    bot.follow_user_followers("tiendanube")
+    bot.follow_user_followers("laredinnova", "clincshop","scalabl.argentina", "s.bilinkis")
 
 bot = UserBot(timeline_comment_path= 'comments.txt',
                 all_comments="comments.txt",
@@ -250,8 +256,8 @@ bot = UserBot(timeline_comment_path= 'comments.txt',
 
 
 schedule.every(1).hours.do(job_4)
-schedule.every(1).hours.do(job_2)
-schedule.every(30).minutes.do(job_3)
+schedule.every(9).minutes.do(job_2)
+schedule.every(1).hours.do(job_10)
 schedule.every(2).days.at("16:00").do(job_6)
 schedule.every(1).days.at("23:00").do(job_5)
 schedule.every(1).hours.do(job_8)
@@ -266,7 +272,7 @@ schedule.every(1).hours.do(job_8)
 
 
 if __name__ == '__main__':
-    job_5() #save current followers
+    job_1() #save current followers
 
     while True:
         schedule.run_pending()
