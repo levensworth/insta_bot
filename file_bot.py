@@ -5,26 +5,56 @@ import random
 from tqdm import tqdm
 import schedule
 import time
-from file_helpers import get_size
+from file_helpers import *
+
+base_path = "./storage/"
+base_expection_path = "./alerts/"
+hashtags_file = "hashtags.txt"
+comments_file ="comments.txt"
+
+
 
 class UserBot(object):
     '''a class wrapper for the instabot bot and api
         it will be modify for our own use'''
 
-
+        #proxy = "free-nl.hide.me"
 
     def __init__(self ,timeline_comment_path=None, whitelist= None, all_comments=None,
-                like_first=False,follow_followers=False, amount=0
-                , stop_words=['shop', 'store', 'free', 'buy', 'compra', 'comprar']):
+                like_first=False,follow_followers=False
+                , stop_words=None,proxy=None,
+                followers=None, blacklist=None, hashtags=None,
+                locations=None, config=None):
 
-        self.bot = instabot.Bot(stop_words=[])
-#        self.bot.proxy = "free-nl.hide.me"
+
+        filters = read_dict_file(config)
+        self.bot = instabot.Bot(whitelist=whitelist,blacklist=blacklist,
+             max_followers_to_follow=filters["max_followers_to_follow"],
+                 min_followers_to_follow=filters["min_followers_to_follow"],
+                 max_following_to_follow=filters["max_following_to_follow"],
+                 min_following_to_follow=filters["min_followers_to_follow"],
+                 max_followers_to_following_ratio=filters["max_followers_to_following_ratio"],
+                 max_following_to_followers_ratio=filters["max_following_to_followers_ratio"],
+                 min_media_count_to_follow=filters["min_media_count_to_follow"],)
         self.bot.login()
-        self.timeline_comment = timeline_comment_path
-        self.all_comments = all_comments
+
+        #my internal variables
+
+
         self.like_after_follow = like_first
         self.follow_followers=follow_followers
-        self.amount= amount
+        self.max_following_amount = filters["follow_amount"]
+        self.max_likes_amount = filters["like_amount"]
+        self.linking_interval = filters["like_time"]
+        self.following_interval = filters["follow_time"]
+
+        #paths
+        self.hashtags_file = hashtags
+        self.timeline_comment = timeline_comment_path
+        self.all_comments = all_comments
+
+
+
         if self.timeline_comment is not None:
             self.timeline_comment_number = get_size(self.timeline_comment)
 
@@ -50,9 +80,9 @@ class UserBot(object):
         random.shuffle(rest_users)
 
         try:
-            white_file = open("whitelist.txt" , "a")
+            white_file = open(base_path+"whitelist.txt" , "a")
         except Exception as e:
-            white_file = open("whitelist.txt" , "w")
+            white_file = open(base_path+"whitelist.txt" , "w")
         finally:
             for user in rest_users:
                 white_file.write(str(user)+"\n")
@@ -63,22 +93,22 @@ class UserBot(object):
     def like_hashtag(self, hashtag):
         media = self.bot.get_hashtag_medias(hashtag= hashtag)
         try:
-            self.bot.like_medias(media)
-            return True
+            return self.bot.like_medias(media)
         except Exception as e:
-            print( " couldn't like hashstag %s" %hashtag)
+            write_exception( " couldn't like hashstag %s" %hashtag)
             return False
     def follow_hashtag(self, hashtag):
         hastag_users = self.bot.get_hashtag_users(hashtag=hashtag)
         try:
             if self.follow_followers:
                 for user in hastag_users:
-                    self.follow_user_followers(user= user)
-            self.bot.follow_users(hastag_users)
-            return True
+                    if not self.follow_user_followers(user= user):
+                        write_balcklist(self.bot.get_username_from_userid(user))
+            return self.bot.follow_users(hastag_users)
         except Exception as e:
-            print(" could follow %s" %hashtag)
+            write_exception(" could follow %s" %hashtag)
             return False
+
     def follow_per_location(self,new_location, amount=0):
 
         self.bot.searchLocation(new_location)
@@ -96,11 +126,16 @@ class UserBot(object):
                         if self.bot.follow(user):
                             print( "user is " + str(user))
                             if self.like_after_follow:
-                                self.like_lasts_media(user = user)
+                                self.like_last_media(user = user)
                             if self.follow_followers:
-                                self.follow_user_followers(user_id=user)
+                                if not self.follow_user_followers(user_id=user):
+                                    write_balcklist(self.bot.get_username_from_userid(user))
+
+
+
                             counter += 1
                             pbar.update(1)
+
                     if location_feed.get('next_max_id'):
                         max_id = location_feed['next_max_id']
                     else:
@@ -122,7 +157,7 @@ class UserBot(object):
                     for media in self.bot.filter_medias(location_feed["items"][:amount], quiet=True):
                         if self.bot.like(media):
                             if self.like_after_follow:
-                                self.like_lasts_media(user = self.bot.get_media_owner(media))
+                                self.like_last_media(user = self.bot.get_media_owner(media))
                             counter += 1
                             pbar.update(1)
                     if location_feed.get('next_max_id'):
@@ -157,7 +192,7 @@ class UserBot(object):
                     return str(comment)
                 index = index + 1
         except Exception as e:
-            print('an error ocurred while trying to read the time_line comments file')
+            write_exception('an error ocurred while trying to read the time_line comments file')
 
     def get_random_all_comment(self, path):
         try:
@@ -183,7 +218,7 @@ class UserBot(object):
             return False
 
 
-    def like_lasts_media(self,user, amount = 1):
+    def like_last_media(self,user, amount = 1):
         try:
             media = self.bot.get_user_medias(user_id=user)
             for x in range(0, amount):
@@ -206,12 +241,45 @@ class UserBot(object):
 
     def follow_user_followers(self,username=None, user_id=None):
         if user_id is None:
-            self.bot.follow_followers(user_id=self.bot.get_userid_from_username(username))
+            return self.bot.follow_followers(user_id=self.bot.get_userid_from_username(username))
         else:
-            self.bot.follow_followers(user_id=user_id)
+            return self.bot.follow_followers(user_id=user_id)
+
+    #FUNCTIONS BASED ON FILE OPERATIONS
+
+    def follow_file(self):
+        if self.follow_file is None:
+            return True
+        try:
+            follow_list = read_followers(self.follow_file)
+            for user in follow_list:
+                if not self.follow_user_followers(username = user):
+                    delete_follower(user, self.follow_file)
+                    write_balcklist(user)
+        except Exception as e:
+            return False
+
+    def like_file_hashtags(self):
+        if self.hashtags_file is None:
+            return False
+        try:
+            hashtags = read_hashtags(base_path+"hashtags.txt")
+            if(len(hashtags) == 0):
+                write_exception("no more hashtags , all were comsumed!")
+            for tag in hashtags:
+                if not self.like_hashtag(hashtag=tag):
+                    delete_hashtag(tag)
+            return True
+
+        except Exception as e:
+            wirte_exception(str(e))
+            return False
+
+    def 
 
     def save_user_stats(self):
         self.bot.save_user_stats(self.bot.username)
+
 
 
 
@@ -249,6 +317,8 @@ def job_9():
 def job_10():
     bot.follow_user_followers("laredinnova", "clincshop","scalabl.argentina", "s.bilinkis")
 
+
+
 bot = UserBot(timeline_comment_path= 'comments.txt',
                 all_comments="comments.txt",
                 follow_followers= True,
@@ -258,23 +328,10 @@ bot = UserBot(timeline_comment_path= 'comments.txt',
 
 schedule.every(1).hours.do(job_4)
 schedule.every(13).minutes.do(job_2)
-#schedule.every(1).hours.do(job_10)
+schedule.every(1).hours.do(job_10)
 schedule.every(2).days.at("16:00").do(job_6)
 schedule.every(1).days.at("23:00").do(job_5)
 schedule.every(1).hours.do(job_8)
 
 
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
-    job_1() #save current followers
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
