@@ -11,7 +11,9 @@ base_path = "./storage/"
 base_expection_path = "./alerts/"
 hashtags_file = "hashtags.txt"
 comments_file ="comments.txt"
-
+follow_file = "follow.txt"
+locations_file = "locations.txt"
+config_file = "config.txt"
 
 
 class UserBot(object):
@@ -170,8 +172,9 @@ class UserBot(object):
                             if self.like_after_follow:
                                 self.like_last_media(user = user)
                             if self.follow_followers:
-                                if not self.follow_user_followers(user_id=user):
-                                    write_blacklist(self.bot.get_username_from_userid(user))
+                                self.follow_user_followers(user_id=user):
+                            #dispose the user
+                            write_blacklist(self.bot.get_username_from_userid(user))
 
 
 
@@ -354,6 +357,8 @@ class UserBot(object):
                 self.follow_per_location(new_location=location, amount=self.max_following_amount)
         except Exception as e:
             write_exception(e)
+
+#FUNCTIONS BASED ON STATS
 
     def save_user_stats(self):
         self.bot.save_user_stats(self.bot.username)

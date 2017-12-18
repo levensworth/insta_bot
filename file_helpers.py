@@ -62,7 +62,7 @@ def delete_follower(username, file_path):
         print(e)
         return False
 
-def wirte_exception(alert):
+def write_exception(alert):
     try:
         exception_file = open(base_expection_path+"alert.txt", "a")
 
