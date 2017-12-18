@@ -18,7 +18,11 @@ def get_size(path):
 
 def read_dict_file(file_path):
     file_dict = csv.DictReader(open(file_path,"r"))
-    return file_dict
+    file_dictionary = {}
+    string_dictionary = file_dict.__next__()
+    for item in string_dictionary:
+        file_dictionary[item]= int(string_dictionary[item])
+    return file_dictionary
 
 
 def read_followers(file_path):
@@ -70,14 +74,14 @@ def wirte_exception(alert):
     exception_file.close()
 
 
-def write_balcklist(username, bot):
+def write_blacklist(username, bot):
     try:
-        blacklist_file = open(base_path+"balcklist_usernames.txt","a")
-        blacklistID_file = open(base_path+"balcklist.txt","a")
+        blacklist_file = open(base_path+"blacklist_usernames.txt","a")
+        blacklistID_file = open(base_path+"blacklist.txt","a")
 
     except Exception:
-        blacklist_file = open(base_path+"balcklist_username.txt","w")
-        blacklistID_file = open(base_path+"balcklist.txt","w")
+        blacklist_file = open(base_path+"blacklist_username.txt","w")
+        blacklistID_file = open(base_path+"blacklist.txt","w")
     finally:
         blacklist_file.write(str(username)+'\n')
         blacklistID_file.write(str(bot.get_userid_from_username(username))+'\n')
@@ -96,6 +100,25 @@ def delete_hashtag(tag):
         return False
 
 
+def append_to_black_list(filepath, bot):
+    try:
+        user_ids = read_followers(file_path=filepath)
+        for ids in user_ids:
+            write_blacklist(bot.get_username_from_userid(ids), bot)
+    except Exception:
+        write_exception("could append blacklits")
+
+
+def read_locations(filepath):
+
+    try:
+        arr = []
+        locations = open(filepath, "r")
+        for location in locations:
+            arr.append(location)
+        return arr
+    except Exception:
+        return []
 
 if __name__ == '__main__':
-    write_balcklist("tu vieja")
+    write_blacklist("tu vieja")

@@ -1,0 +1,9 @@
+unorderable types: int() > str() TIME: 12/18/17 12:33
+unorderable types: int() > str() TIME: 12/18/17 12:34
+unorderable types: int() > str() TIME: 12/18/17 12:35
+unorderable types: int() > str() TIME: 12/18/17 12:35
+unorderable types: int() > str() TIME: 12/18/17 12:36
+unorderable types: int() > str() TIME: 12/18/17 12:37
+unorderable types: int() > str() TIME: 12/18/17 12:39
+unorderable types: int() > str() TIME: 12/18/17 12:40
+unorderable types: int() > str() TIME: 12/18/17 12:42

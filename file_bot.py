@@ -29,13 +29,13 @@ class UserBot(object):
 
         filters = read_dict_file(config)
         self.bot = instabot.Bot(whitelist=whitelist,blacklist=blacklist,
-             max_followers_to_follow=filters["max_followers_to_follow"],
-                 min_followers_to_follow=filters["min_followers_to_follow"],
-                 max_following_to_follow=filters["max_following_to_follow"],
-                 min_following_to_follow=filters["min_followers_to_follow"],
-                 max_followers_to_following_ratio=filters["max_followers_to_following_ratio"],
-                 max_following_to_followers_ratio=filters["max_following_to_followers_ratio"],
-                 min_media_count_to_follow=filters["min_media_count_to_follow"],)
+             max_followers_to_follow=int(filters["max_followers_to_follow"]),
+                 min_followers_to_follow=int(filters["min_followers_to_follow"]),
+                 max_following_to_follow=int(filters["max_following_to_follow"]),
+                 min_following_to_follow=int(filters["min_followers_to_follow"]),
+                 max_followers_to_following_ratio=int(filters["max_followers_to_following_ratio"]),
+                 max_following_to_followers_ratio=int(filters["max_following_to_followers_ratio"]),
+                 min_media_count_to_follow=int(filters["min_media_count_to_follow"]),)
         self.bot.login()
 
         #my internal variables
@@ -47,7 +47,7 @@ class UserBot(object):
         self.max_likes_amount = filters["like_amount"]
         self.linking_interval = filters["like_time"]
         self.following_interval = filters["follow_time"]
-
+        self.config = filters
         #paths
         self.hashtags_file = hashtags
         self.timeline_comment = timeline_comment_path
@@ -64,7 +64,8 @@ class UserBot(object):
             self.add_whiteList(whitelist)
 
 
-
+    def get_config(self):
+        return self.config
 
     def add_blackList(self,path):
         self.bot.add_blacklist(path)
@@ -103,11 +104,53 @@ class UserBot(object):
             if self.follow_followers:
                 for user in hastag_users:
                     if not self.follow_user_followers(user= user):
-                        write_balcklist(self.bot.get_username_from_userid(user))
+                        write_blacklist(self.bot.get_username_from_userid(user))
             return self.bot.follow_users(hastag_users)
         except Exception as e:
             write_exception(" could follow %s" %hashtag)
             return False
+
+
+    def follow_hashtag_per_location(self,new_location,hashtag, amount=0):
+
+        self.bot.searchLocation(new_location)
+        finded_location = self.bot.LastJson['items'][0]
+
+        counter = 0
+        max_id = ''
+        with tqdm(total=amount) as pbar:
+            while counter < amount:
+                if self.bot.getLocationFeed(finded_location['location']['pk'], maxid=max_id):
+                    location_feed = self.bot.LastJson
+
+                    for media in self.bot.filter_medias(location_feed["items"][:amount], quiet=True):
+                        if self.contains_hashtag(self.bot.get_media_info(media), hashtag):
+                            user = self.bot.get_media_owner(media)
+                            if self.bot.follow(user):
+                                print( "user is " + str(user))
+                                if self.like_after_follow:
+                                    self.like_last_media(user = user)
+                                if self.follow_followers:
+                                    self.follow_user_followers(user_id=user)
+                                counter += 1
+                                pbar.update(1)
+                            append_to_black_list("followed.txt",self.bot)
+                    if location_feed.get('next_max_id'):
+                        max_id = location_feed['next_max_id']
+                    else:
+                        return False
+
+        return True
+
+    def contains_hashtag(self,media, hashtag):
+        hashtag = "#" + str(hashtag)
+        try:
+            if hashtag in media[0]["caption"]["text"]:
+                return True
+        except Exception:
+            return False
+
+
 
     def follow_per_location(self,new_location, amount=0):
 
@@ -116,7 +159,6 @@ class UserBot(object):
 
         counter = 0
         max_id = ''
-        print("entre")
         with tqdm(total=amount) as pbar:
             while counter < amount:
                 if self.bot.getLocationFeed(finded_location['location']['pk'], maxid=max_id):
@@ -129,7 +171,7 @@ class UserBot(object):
                                 self.like_last_media(user = user)
                             if self.follow_followers:
                                 if not self.follow_user_followers(user_id=user):
-                                    write_balcklist(self.bot.get_username_from_userid(user))
+                                    write_blacklist(self.bot.get_username_from_userid(user))
 
 
 
@@ -255,7 +297,7 @@ class UserBot(object):
             for user in follow_list:
                 if not self.follow_user_followers(username = user):
                     delete_follower(user, self.follow_file)
-                    write_balcklist(user)
+                    write_blacklist(user)
         except Exception as e:
             return False
 
@@ -275,7 +317,43 @@ class UserBot(object):
             wirte_exception(str(e))
             return False
 
-    def 
+    def follow_hashtag_per_location_file(self):
+        if self.hashtags_file is None:
+            return False
+        try:
+            hashtags = read_hashtags(base_path+"hashtags.txt")
+            locations = read_locations(base_path+"locations.txt")
+            if(len(hashtags) == 0):
+                write_exception("no more hashtags , all were comsumed!")
+
+            for tag in hashtags:
+                found = False
+                for location in locations:
+                    if self.follow_hashtag_per_location(hashtag=tag,new_location=location,amount=self.max_likes_amount):
+                        found = True
+
+                if not found:
+                    delete_hashtag(tag)
+            return True
+        except Exception as e:
+            wirte_exception(str(e))
+            return False
+
+    def like_location_feed_file(self):
+        try:
+            locations = read_locations(base_path+"locations.txt")
+            for location in locations:
+                self.like_location_feed(new_location=location, amount=self.max_likes_amount)
+        except Exception as e:
+            write_exception(e)
+
+    def follow_per_location_file(self):
+        try:
+            locations = read_locations(base_path+"locations.txt")
+            for location in locations:
+                self.follow_per_location(new_location=location, amount=self.max_following_amount)
+        except Exception as e:
+            write_exception(e)
 
     def save_user_stats(self):
         self.bot.save_user_stats(self.bot.username)
@@ -283,20 +361,14 @@ class UserBot(object):
 
 
 
-def job_1(): bot.freeze_following()
+def job_1():
+    bot.freeze_following()
 
 def job_2( ):
-    hashtags = ["cambiemos","salta","laradiodemartingrande","oran,salta","generalgüemes,salta",
-                "tartagal,salta","pinachal,salta,argentina","cerrillos,salta"]
-    for tag in hashtags:
-        bot.like_hashtag(tag)
-        bot.follow_type(follow_type="hashtag", hashtags = [tag], amount=3)
+    bot.follow_hashtag_per_location_file()
 
 def job_3():
-    locations=["salta", "palermo", "olivos", "beccar", " san isidro"]
-    for location in locations:
-        bot.follow_type(follow_type="location", amount= 20, locations=[location])
-        bot.like_location_feed(new_location=location, amount=20)
+    bot.like_location_feed_file()
 
 def job_4():
     bot.save_user_stats()
@@ -308,30 +380,36 @@ def job_6():
     bot.unfollow_all()
 
 def job_7():
-    bot.comment_timeline()
+    bot.follow_per_location_file()
 
 def job_8():
-    bot.like_user_feed(amount=4)
+    bot.like_user_feed(amount=9)
 def job_9():
-    bot.comment_timeline()
-def job_10():
-    bot.follow_user_followers("laredinnova", "clincshop","scalabl.argentina", "s.bilinkis")
+    bot.follow_file()
 
 
-
-bot = UserBot(timeline_comment_path= 'comments.txt',
-                all_comments="comments.txt",
+bot = UserBot(timeline_comment_path= base_path+'comments.txt',
+                all_comments=base_path+"comments.txt",
                 follow_followers= True,
-                amount= 10,
-                like_first= True)
+                like_first= True,
+                followers=base_path+"follow.txt",
+                blacklist=base_path+"blacklist.txt",
+                hashtags=base_path+"hashtags.txt",
+                config =base_path+"config.txt",
+                locations=base_path+"locations.txt")
+
 
 
 schedule.every(1).hours.do(job_4)
 schedule.every(13).minutes.do(job_2)
-schedule.every(1).hours.do(job_10)
+schedule.every(9).minutes.do(job_9)
 schedule.every(2).days.at("16:00").do(job_6)
 schedule.every(1).days.at("23:00").do(job_5)
 schedule.every(1).hours.do(job_8)
 
 
 if __name__ == '__main__':
+    job_1()
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

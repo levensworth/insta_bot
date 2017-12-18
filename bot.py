@@ -68,17 +68,60 @@ class UserBot(object):
         except Exception as e:
             print( " couldn't like hashstag %s" %hashtag)
             return False
-    def follow_hashtag(self, hashtag):
-        hastag_users = self.bot.get_hashtag_users(hashtag=hashtag)
+
+
+    def follow_hashtag(self, hashtag, locations=[]):
+        hashtag_users = self.bot.get_hashtag_users(hashtag=hashtag)
         try:
             if self.follow_followers:
-                for user in hastag_users:
+                for user in hashtag_users:
                     self.follow_user_followers(user= user)
-            self.bot.follow_users(hastag_users)
+            self.bot.follow_users(hashtag_users)
             return True
         except Exception as e:
-            print(" could follow %s" %hashtag)
+            print(" could not follow %s" %hashtag)
             return False
+
+    def follow_hashtag_per_location(self,new_location,hashtag, amount=0):
+
+        self.bot.searchLocation(new_location)
+        finded_location = self.bot.LastJson['items'][0]
+
+        counter = 0
+        max_id = ''
+        print("entre")
+        with tqdm(total=amount) as pbar:
+            while counter < amount:
+                if self.bot.getLocationFeed(finded_location['location']['pk'], maxid=max_id):
+                    location_feed = self.bot.LastJson
+
+                    for media in self.bot.filter_medias(location_feed["items"][:amount], quiet=True):
+                        if self.contains_hashtag(self.bot.get_media_info(media), hashtag):
+                            user = self.bot.get_media_owner(media)
+                            if self.bot.follow(user):
+                                print( "user is " + str(user))
+                                if self.like_after_follow:
+                                    self.like_lasts_media(user = user)
+                                if self.follow_followers:
+                                    self.follow_user_followers(user_id=user)
+                                counter += 1
+                                pbar.update(1)
+                    if location_feed.get('next_max_id'):
+                        max_id = location_feed['next_max_id']
+                    else:
+                        return False
+        return True
+
+    def contains_hashtag(self,media, hashtag):
+        hashtag = "#" + str(hashtag)
+        try:
+            if hashtag in media[0]["caption"]["text"]:
+                return True
+        except Exception:
+            return False
+
+
+
     def follow_per_location(self,new_location, amount=0):
 
         self.bot.searchLocation(new_location)
@@ -171,6 +214,8 @@ class UserBot(object):
         except Exception as e:
             print('an error ocurred while trying to read the comments file')
 
+
+
     def comment_timeline(self ):
         medias = self.bot.get_timeline_medias()
         try:
@@ -221,9 +266,9 @@ def job_2( ):
     hashtags = ["cambiemos","salta","laradiodemartingrande","oran,salta","generalgüemes,salta",
                 "tartagal,salta","pinachal,salta,argentina","cerrillos,salta"]
     for tag in hashtags:
-        bot.like_hashtag(tag)
-        bot.follow_type(follow_type="hashtag", hashtags = [tag], amount=3)
-
+        #bot.like_hashtag(tag)
+        #bot.follow_type(follow_type="hashtag", hashtags = [tag], amount=3)
+        bot.follow_hashtag(hashtag=tag, locations="palermo")
 def job_3():
     locations=["salta", "palermo", "olivos", "beccar", " san isidro"]
     for location in locations:
@@ -273,8 +318,12 @@ schedule.every(1).hours.do(job_8)
 
 
 if __name__ == '__main__':
+    '''
     job_1() #save current followers
 
     while True:
         schedule.run_pending()
         time.sleep(1)
+    '''
+
+    bot.follow_hashtag_per_location("palermo", "yolo", 90)
