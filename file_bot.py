@@ -172,7 +172,7 @@ class UserBot(object):
                             if self.like_after_follow:
                                 self.like_last_media(user = user)
                             if self.follow_followers:
-                                self.follow_user_followers(user_id=user):
+                                self.follow_user_followers(user_id=user)
                             #dispose the user
                             write_blacklist(self.bot.get_username_from_userid(user))
 
@@ -342,6 +342,16 @@ class UserBot(object):
             wirte_exception(str(e))
             return False
 
+    def follow_hashtag_file(self):
+        try:
+            hashtags = read_hashtags(base_path+ashtags_file)
+            for tag in hashtags:
+                if not self.follow_hashtag(hashtag=tag):
+                    delete_hashtag(tag)
+            return True
+        except Exception as e:
+            write_exception(e)
+            return False
     def like_location_feed_file(self):
         try:
             locations = read_locations(base_path+"locations.txt")
@@ -414,6 +424,7 @@ schedule.every(1).hours.do(job_8)
 
 
 if __name__ == '__main__':
+    job_6()
     job_1()
     while True:
         schedule.run_pending()
