@@ -69,7 +69,9 @@ def write_exception(alert):
     except Exception as e:
         exception_file = open(base_expection_path+"alert.txt", "w")
 
-    exception_file.write(alert + " TIME: "+ time.strftime("%D %H:%M", time.localtime(time.time())))
+    exception_file.write(str(alert))
+    exception_file.write(" TIME: ")
+    exception_file.write(time.strftime("%D %H:%M", time.localtime(time.time())))
     exception_file.write('\n')
     exception_file.close()
 
@@ -87,6 +89,16 @@ def write_blacklist(username, bot):
         blacklistID_file.write(str(bot.get_userid_from_username(username))+'\n')
         blacklist_file.close()
 
+def read_username_blacklist():
+    try:
+        blacklist = open("blacklist_username.txt","r")
+        user_list = []
+        for name in blacklist:
+            user_list.append(name)
+        return user_list
+    except Exception as e:
+        write_exception(e)
+        return []
 
 def delete_hashtag(tag):
     try:
@@ -119,6 +131,3 @@ def read_locations(filepath):
         return arr
     except Exception:
         return []
-
-if __name__ == '__main__':
-    write_blacklist("tu vieja")
