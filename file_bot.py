@@ -297,8 +297,12 @@ class UserBot(object):
         if self.follow_file is None:
             return True
         try:
+<<<<<<< HEAD
             follow_list = read_followers(follow_file)
 
+=======
+            follow_list = read_followers(self.follow_file)
+>>>>>>> origin/master
             if len(follow_file) <= 1:
                 send_notification("USERS from {}".format(srt(self.bot.username)),"no more user to follow!")
 
@@ -388,7 +392,11 @@ class UserBot(object):
         try:
             user_follers = self.bot.get_user_followers(user_id=self.bot.user_id)
             interacted_accounts = read_blacklist()
+<<<<<<< HEAD
             report = open(user_report_file)
+=======
+            report = open(base_path+"user stats")
+>>>>>>> origin/master
         except Exception as e:
             write_exception(e)
 
