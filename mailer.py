@@ -7,9 +7,9 @@ def send_notification(subject, body):
     ##############################################
     # You fill out the following variables
     # and let Python do the rest...
-    fromaddr = "bpstudio96@gmail.com"
-    password = "ca210946"
-    toaddr = "ivanandrestaba@gmail.com"  # WARNING: change this
+    fromaddr = "your email"
+    password = "yourpassword"
+    toaddr = "person to send"  # WARNING: change this
     subject = subject
     body = body
     ##############################################
