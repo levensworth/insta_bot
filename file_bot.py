@@ -6,6 +6,7 @@ from tqdm import tqdm
 import schedule
 import time
 from file_helpers import *
+from mailer import send_notification
 
 base_path = "./storage/"
 base_expection_path = "./alerts/"
@@ -297,6 +298,9 @@ class UserBot(object):
             return True
         try:
             follow_list = read_followers(self.follow_file)
+            if len(follow_file) <= 1:
+                send_notification("USERS from {}".format(srt(self.bot.username)),"no more user to follow!")
+
             for user in follow_list:
                 if not self.follow_user_followers(username = user):
                     delete_follower(user, self.follow_file)
@@ -311,13 +315,14 @@ class UserBot(object):
             hashtags = read_hashtags(base_path+"hashtags.txt")
             if(len(hashtags) == 0):
                 write_exception("no more hashtags , all were comsumed!")
+                send_notification("HASHTAGS {}".format(str(self.bot.username)),"no more hashtags , all were comsumed!")
             for tag in hashtags:
                 if not self.like_hashtag(hashtag=tag):
                     delete_hashtag(tag)
             return True
 
         except Exception as e:
-            wirte_exception(str(e))
+            write_exception(str(e))
             return False
 
     def follow_hashtag_per_location_file(self):
@@ -328,7 +333,7 @@ class UserBot(object):
             locations = read_locations(base_path+"locations.txt")
             if(len(hashtags) == 0):
                 write_exception("no more hashtags , all were comsumed!")
-
+                send_notification("HASHTAGS from {}".format(str(self.bot.username)),"no more hashtags , all were comsumed!")
             for tag in hashtags:
                 found = False
                 for location in locations:
@@ -339,7 +344,7 @@ class UserBot(object):
                     delete_hashtag(tag)
             return True
         except Exception as e:
-            wirte_exception(str(e))
+            write_exception(str(e))
             return False
 
     def follow_hashtag_file(self):
@@ -373,14 +378,22 @@ class UserBot(object):
     def save_user_stats(self):
         self.bot.save_user_stats(self.bot.username)
 
-
+    def generate_report_for_user(self):
+        """ we use the blacklist generated from all the account the bot have interacted
+            with and compares with the ones are currently following you"""
+        try:
+            user_follers = self.bot.get_user_followers(user_id=self.bot.user_id)
+            interacted_accounts = read_blacklist()
+            report = open(base_path+"user stats")
+        except Exception as e:
+            write_exception(e)
 
 
 def job_1():
     bot.freeze_following()
 
 def job_2( ):
-    bot.follow_hashtag_per_location_file()
+    bot.follow_hashtag_file()
 
 def job_3():
     bot.like_location_feed_file()
