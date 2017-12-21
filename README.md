@@ -13,4 +13,5 @@ the main goal of this repository is to add automation  procedures to handle mult
 > - The config file is pretty much well configured for any kind of use but if you want to change it , be careful.
 > - The alerts folder willl contain all possible errors.
 > - Conif the mailer.py to your own account , it will notify you to put more hashtags or accounts to follow.
-** enoy**
+
+**enoy**
