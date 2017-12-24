@@ -1,2 +1,6 @@
 follow_amount,follow_time,like_amount,like_time,min_followers_to_follow,max_followers_to_follow,max_following_to_follow,min_followers_to_follow,max_followers_to_following_ratio,max_following_to_followers_ratio,min_media_count_to_follow
+<<<<<<< HEAD
 30,9,30,7,10,2000,2000,10,10,2,3
+=======
+30,9,45,7,10,2000,2000,10,10,2,3
+>>>>>>> origin/master
