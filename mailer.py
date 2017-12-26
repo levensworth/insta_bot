@@ -7,15 +7,14 @@ def send_notification(subject, body):
     ##############################################
     # You fill out the following variables
     # and let Python do the rest...
-<<<<<<< HEAD
+
     fromaddr = "your emial"
     password = "your_password"
     toaddr = "the reciever@gmail.com"  # WARNING: change this
-=======
+
     fromaddr = "your email"
     password = "yourpassword"
     toaddr = "person to send"  # WARNING: change this
->>>>>>> origin/master
     subject = subject
     body = body
     ##############################################
