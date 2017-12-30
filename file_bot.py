@@ -216,7 +216,10 @@ bot = UserBot(timeline_comment_path= base_path+'comments.txt',
                 blacklist=base_path+"blacklist.txt",
                 hashtags=base_path+"hashtags.txt",
                 config =base_path+"config.txt",
-                locations=base_path+"locations.txt")
+                locations=base_path+"locations.txt",
+                whitelist=base_path+"whitelist.txt",
+                blacklist=base_path+"blacklist.txt"
+                )
 
 
 
@@ -230,8 +233,8 @@ schedule.every(30).minutes.do(job_7)
 
 
 if __name__ == '__main__':
-    job_5()
-    job_1()
+
+    job_9()
     while True:
         schedule.run_pending()
         time.sleep(1)

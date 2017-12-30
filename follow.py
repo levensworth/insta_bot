@@ -8,11 +8,11 @@ from file_helpers import *
 from mailer import send_notification
 from like import *
 
-
+base_path = "./storage/"
 def freeze_following(bot):
     ''' make a Whitelist with all your current following accounts'''
     your_following = bot.get_user_following(bot.user_id)
-    already_whitelisted = bot.read_list_from_file("whitelist.txt")
+    already_whitelisted = bot.read_list_from_file(base_path+"whitelist.txt")
     rest_users = list(set(your_following) - set(already_whitelisted))
     random.shuffle(rest_users)
 
