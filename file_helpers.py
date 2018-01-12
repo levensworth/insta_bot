@@ -2,7 +2,7 @@ import csv
 import time
 base_path = "./storage/"
 base_expection_path = "./alerts/"
-
+hashtags_file = "hashtags.txt"
 """
 ALL FILES ONLY USE USERNAME NO ID WILL BE RECORDED AS A MATTER OF SIMPLICITY FOR
 THE FINAL USER
@@ -121,6 +121,17 @@ def append_to_black_list(filepath, bot):
         write_exception("could append blacklits")
 
 
+def read_list_file(path):
+    try:
+        list_to_read = open(path, "r")
+        empty_list = []
+        for item in list_to_read :
+            empty_list.append(item)
+        return empty_list
+
+    except Exception as e:
+        write_exception(e)
+        return []
 def read_locations(filepath):
 
     try:

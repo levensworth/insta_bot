@@ -16,6 +16,7 @@ from unfollow import *
 
 base_path = "./storage/"
 base_expection_path = "./alerts/"
+blacklist_path = base_path + "blacklist.txt"
 hashtags_file = base_path+"hashtags.txt"
 comments_file ="comments.txt"
 follow_file_path = base_path+"follow.txt"
@@ -114,6 +115,8 @@ class UserBot(object):
     def unfollow_non_followers(self):
         unfollow_non_followers(self.bot)
 
+    def unfollow_from_file(self):
+        unfollow_from_file(self.bot, blacklist_path)
 
     def get_random_timeline_comment(self, path):
         try:
@@ -181,6 +184,8 @@ class UserBot(object):
         generate_report_for_user(self.bot)
 
 
+#jobs for automation
+
 def job_1():
     bot.freeze_following()
 
@@ -197,7 +202,7 @@ def job_5():
     bot.unfollow_non_followers()
 
 def job_6():
-    bot.unfollow_all()
+    bot.unfollow_from_file()
 
 def job_7():
     bot.follow_per_location_file()
@@ -223,6 +228,7 @@ bot = UserBot(timeline_comment_path= base_path+'comments.txt',
 
 
 
+
 schedule.every(1).hours.do(job_4)
 schedule.every(30).minutes.do(job_2)
 schedule.every(45).minutes.do(job_9)
@@ -234,7 +240,7 @@ schedule.every(30).minutes.do(job_7)
 
 if __name__ == '__main__':
 
-    job_9()
+    job_1()
     while True:
         schedule.run_pending()
         time.sleep(1)
