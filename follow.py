@@ -25,6 +25,8 @@ def freeze_following(bot):
             white_file.write(str(user)+"\n")
 
         white_file.close()
+        final_list = your_following.append(already_whitelisted)
+        bot.add_whitelist(base_path+"whitelist.txt")
         return True
 
 

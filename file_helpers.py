@@ -88,6 +88,7 @@ def write_blacklist(username, bot):
         blacklist_file.write(str(username)+'\n')
         blacklistID_file.write(str(bot.get_userid_from_username(username))+'\n')
         blacklist_file.close()
+        bot.add_blacklist(base_path+"blacklist.txt")
 
 def read_username_blacklist():
     try:
