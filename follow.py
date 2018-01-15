@@ -22,7 +22,7 @@ def freeze_following(bot):
         white_file = open(base_path+"whitelist.txt" , "w")
     finally:
         for user in rest_users:
-            white_file.write(str(user)+"\n")
+            white_file.write(str(bot.get_username_from_userid(user))+"\n")
 
         white_file.close()
         final_list = your_following.append(already_whitelisted)
