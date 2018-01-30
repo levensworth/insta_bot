@@ -202,7 +202,6 @@ def job_5():
     bot.unfollow_non_followers()
 
 def job_6():
-    bot.unfollow_all()
     bot.unfollow_from_file()
 
 def job_7():
@@ -212,6 +211,7 @@ def job_8():
     bot.like_user_feed(amount=9)
 def job_9():
     bot.follow_file()
+
 
 
 bot = UserBot(timeline_comment_path= base_path+'comments.txt',
@@ -240,8 +240,8 @@ schedule.every(30).minutes.do(job_7)
 
 if __name__ == '__main__':
 
-    job_1()
-    job_6()
+    setup(bot)
+
     while True:
         schedule.run_pending()
         time.sleep(1)

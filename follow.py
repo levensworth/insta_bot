@@ -22,7 +22,7 @@ def freeze_following(bot):
         white_file = open(base_path+"whitelist.txt" , "w")
     finally:
         for user in rest_users:
-            white_file.write(str(bot.get_username_from_userid(user))+"\n")
+            white_file.write(str(user)+"\n")
 
         white_file.close()
         final_list = your_following.append(already_whitelisted)
@@ -134,9 +134,9 @@ def follow_file(bot, follow_file):
         return True
     try:
         follow_list = read_followers(follow_file)
-
-        if len(follow_file) <= 1:
-            send_notification("USERS from {}".format(srt(bot.username)),"no more user to follow!")
+        print(len(follow_list))
+        if len(follow_list) <= 1:
+            send_notification("USERS from {}".format(str(bot.username)),"no more user to follow!")
 
         for user in follow_list:
             if not follow_user_followers(bot,username = user):

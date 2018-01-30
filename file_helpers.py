@@ -143,3 +143,33 @@ def read_locations(filepath):
         return arr
     except Exception:
         return []
+
+
+def setup(bot):
+    print("welcome to Mana growth instabot.... created by levesnworth")
+    print("will run a few checks...")
+    while True:
+        print("is this a reboot? [y/n]")
+        ans = input()
+        if ans is 'y':
+            return True
+
+        elif ans is 'n':
+            first_boot(bot)
+            return False
+        else:
+            print("bad input try again")
+
+
+
+def first_boot(bot):
+    print("you want to freeze followers? press y if yes else whatever you like")
+    ans = input()
+    if ans is 'y':
+        bot.freeze_following()
+
+    print("do you wnat to unfollow non followers as to begin the account in clean?")
+    ans = input()
+    if ans is 'y':
+        bot.unfollow_non_followers()
+    print("all done !")
