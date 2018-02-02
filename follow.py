@@ -9,6 +9,8 @@ from mailer import send_notification
 from like import *
 
 base_path = "./storage/"
+minimum = 5
+
 def freeze_following(bot):
     ''' make a Whitelist with all your current following accounts'''
     your_following = bot.get_user_following(bot.user_id)
@@ -121,14 +123,14 @@ def follow_per_location(bot, new_location, amount=0, follow_followers=False):
 
 
 def follow_user_followers(bot,username=None, user_id=None):
-    before =  bot.get_user_followers(bot.user_id)
+    before =  bot.get_user_following(bot.user_id)
     if user_id is None:
         bot.follow_followers(user_id=bot.get_userid_from_username(username))
     else:
         bot.follow_followers(user_id=user_id)
 
-    after = bot.get_user_followers(bot.user_id)
-    if before < after:
+    after = bot.get_user_following(bot.user_id)
+    if (before+minimum) < after:
         return True
     else:
         return False
