@@ -36,7 +36,7 @@ def follow_hashtag(bot, hashtag, follow_followers):
         if follow_followers:
             for user in hastag_users:
                 if not follow_user_followers(bot,user_id=user):
-                    write_blacklist(bot.get_username_from_userid(user))
+                    write_blacklist(bot.get_username_from_userid(user),bot)
         return bot.follow_users(hastag_users)
     except Exception as e:
         write_exception(" could not follow %s" %hashtag)
@@ -105,7 +105,7 @@ def follow_per_location(bot, new_location, amount=0, follow_followers=False):
                         if follow_followers:
                             follow_user_followers(bot,user_id=user)
                         #dispose the user
-                        write_blacklist(bot.get_username_from_userid(user))
+                        write_blacklist(bot.get_username_from_userid(user),bot)
 
 
 
@@ -141,7 +141,7 @@ def follow_file(bot, follow_file):
         for user in follow_list:
             if not follow_user_followers(bot,username = user):
                 delete_follower(user, follow_file)
-                write_blacklist(user)
+                write_blacklist(user,bot)
     except Exception as e:
         print(e)
         write_exception(e)
