@@ -121,12 +121,17 @@ def follow_per_location(bot, new_location, amount=0, follow_followers=False):
 
 
 def follow_user_followers(bot,username=None, user_id=None):
+    before =  bot.get_user_followers(bot.user_id)
     if user_id is None:
-        return bot.follow_followers(user_id=bot.get_userid_from_username(username))
+        bot.follow_followers(user_id=bot.get_userid_from_username(username))
     else:
-        return bot.follow_followers(user_id=user_id)
+        bot.follow_followers(user_id=user_id)
 
-
+    after = bot.get_user_followers(bot.user_id)
+    if before < after:
+        return True
+    else:
+        return False
 
 
 def follow_file(bot, follow_file):
