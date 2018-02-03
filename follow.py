@@ -9,7 +9,7 @@ from mailer import send_notification
 from like import *
 
 base_path = "./storage/"
-minimum = 5
+minimum = 1
 
 def freeze_following(bot):
     ''' make a Whitelist with all your current following accounts'''
@@ -130,7 +130,7 @@ def follow_user_followers(bot,username=None, user_id=None):
         bot.follow_followers(user_id=user_id)
 
     after = bot.get_user_following(bot.user_id)
-    if (before+minimum) < after:
+    if (before+minimum) <= after:
         return True
     else:
         return False
@@ -155,7 +155,7 @@ def follow_file(bot, follow_file):
         return False
 
 
-def follow_hashtag_per_location_file(bot, hashtags_file, max_likes_amount, like_after_follow, follow_user_followers):
+def follow_hashtag_per_location_file(bot, hashtags_file, max_likes_amount, like_after_follow=False, follow_user_followers):
     if hashtags_file is None:
         return False
     try:
