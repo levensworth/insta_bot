@@ -113,13 +113,13 @@ def delete_hashtag(tag):
         return False
 
 
-def append_to_black_list(filepath, bot):
+def append_to_black_list(bot,filepath):
     try:
         user_ids = read_followers(file_path=filepath)
         for ids in user_ids:
             write_blacklist(bot.get_username_from_userid(ids), bot)
     except Exception:
-        write_exception("could append blacklits")
+        write_exception("could append blacklits.")
 
 
 def read_list_file(path):
@@ -127,12 +127,15 @@ def read_list_file(path):
         list_to_read = open(path, "r")
         empty_list = []
         for item in list_to_read :
+            #this is needed t delete the space
+            item = item.replace('\n', '')
             empty_list.append(item)
         return empty_list
 
     except Exception as e:
         write_exception(e)
         return []
+
 def read_locations(filepath):
 
     try:

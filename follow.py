@@ -33,13 +33,14 @@ def freeze_following(bot):
 
 
 def follow_hashtag(bot, hashtag, follow_followers):
-    hastag_users = bot.get_hashtag_users(hashtag=hashtag)
+    hashtag_users = bot.get_hashtag_users(hashtag)
     try:
         if follow_followers:
-            for user in hastag_users:
+            for user in hashtag_users:
                 if not follow_user_followers(bot,user_id=user):
                     write_blacklist(bot.get_username_from_userid(user),bot)
-        return bot.follow_users(hastag_users)
+        bot.follow_users(hashtag_users)
+        return True
     except Exception as e:
         write_exception(" could not follow %s" %hashtag)
         return False
@@ -69,7 +70,7 @@ like_after_follow=False, follow_followers=False):
                                 follow_user_followers(bot, user_id=user)
                             counter += 1
                             pbar.update(1)
-                        append_to_black_list("followed.txt",self.bot)
+                        append_to_black_list(self.bot,"followed.txt")
                 if location_feed.get('next_max_id'):
                     max_id = location_feed['next_max_id']
                 else:
@@ -87,7 +88,7 @@ def contains_hashtag(media, hashtag):
 
 
 
-def follow_per_location(bot, new_location, amount=0, follow_followers=False):
+def follow_per_location(bot, new_location, amount=0, follow_followers=False, like_after_follow = False):
 
     bot.searchLocation(new_location)
     finded_location = bot.LastJson['items'][0]
@@ -103,7 +104,7 @@ def follow_per_location(bot, new_location, amount=0, follow_followers=False):
                     if bot.follow(user):
                         print( "user is " + str(user))
                         if like_after_follow:
-                            like_last_media(user = user)
+                            like_last_media(bot, user = user)
                         if follow_followers:
                             follow_user_followers(bot,user_id=user)
                         #dispose the user
@@ -141,8 +142,7 @@ def follow_file(bot, follow_file):
         return True
     try:
         follow_list = read_followers(follow_file)
-        print(len(follow_list))
-        if len(follow_list) <= 1:
+        if len(follow_list) < 1:
             send_notification("USERS from {}".format(str(bot.username)),"no more user to follow!")
 
         for user in follow_list:
@@ -151,11 +151,11 @@ def follow_file(bot, follow_file):
                 write_blacklist(user,bot)
     except Exception as e:
         print(e)
-        write_exception(e)
+        write_exception(e + " follow_file()")
         return False
 
 
-def follow_hashtag_per_location_file(bot, hashtags_file, max_likes_amount, like_after_follow=False, follow_user_followers):
+def follow_hashtag_per_location_file(bot, hashtags_file, max_likes_amount, like_after_follow=False, follow_user_followers=None):
     if hashtags_file is None:
         return False
     try:
@@ -175,7 +175,7 @@ def follow_hashtag_per_location_file(bot, hashtags_file, max_likes_amount, like_
                 delete_hashtag(tag)
         return True
     except Exception as e:
-        write_exception(str(e))
+        write_exception(str(e) + "from follow_hashtag_per_location")
         return False
 
 
@@ -188,14 +188,14 @@ def follow_hashtag_file(bot, hashtags_file, follow_followers):
         return True
     except Exception as e:
         print(e)
-        write_exception(e)
+        write_exception(str(e) + "from follow_hashtag_file")
         return False
 
 
-def follow_per_location_file(bot, max_following_amount, locations_file):
+def follow_per_location_file(bot, max_following_amount, locations_file, like_after_follow=False):
     try:
         locations = read_locations(locations_file)
         for location in locations:
-            follow_per_location(bot,new_location=location, amount=max_following_amount)
+            follow_per_location(bot,new_location=location, amount=max_following_amount, like_after_follow=like_after_follow)
     except Exception as e:
-        write_exception(e)
+        write_exception(str(e)+ " from follow_per_location")

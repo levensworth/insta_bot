@@ -72,7 +72,7 @@ def like_file_hashtags(bot, hashtags_file=None, ):
                 delete_hashtag(tag)
         return True
     except Exception as e:
-        write_exception(str(e))
+        write_exception(str(e) + "from like_file_hashtags")
         return False
 
 def like_last_media(bot,user, amount = 1):
@@ -91,4 +91,4 @@ def like_location_feed_file(bot, max_likes_amount, locations_file):
         for location in locations:
             like_location_feed(bot,new_location=location, amount=max_likes_amount)
     except Exception as e:
-        write_exception(e)
+        write_exception(e + " from like_location_feed_file")

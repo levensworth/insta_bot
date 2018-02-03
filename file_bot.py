@@ -17,6 +17,7 @@ from unfollow import *
 base_path = "./storage/"
 base_expection_path = "./alerts/"
 blacklist_path = base_path + "blacklist.txt"
+whitelist_path = base_path + "whitelist.txt"
 hashtags_file = base_path+"hashtags.txt"
 comments_file ="comments.txt"
 follow_file_path = base_path+"follow.txt"
@@ -72,7 +73,7 @@ class UserBot(object):
             self.all_comments_number = get_size(self.all_comments)
         if whitelist is not None:
             self.add_whiteList(whitelist)
-
+        print(self.bot.user_id)
 
     def get_config(self):
         return self.config
@@ -173,7 +174,7 @@ class UserBot(object):
         return like_location_feed_file(self.bot, self.max_likes_amount, locations_file)
 
     def follow_per_location_file(self):
-        follow_per_location_file(self.bot, self.max_following_amount, locations_file)
+        follow_per_location_file(self.bot, self.max_following_amount, locations_file, self.like_after_follow)
 
 #FUNCTIONS BASED ON STATS
 
@@ -239,9 +240,11 @@ schedule.every(30).minutes.do(job_7)
 
 
 if __name__ == '__main__':
-
     setup(bot)
+    job_6()
 
+'''
     while True:
         schedule.run_pending()
         time.sleep(1)
+'''
