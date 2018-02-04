@@ -26,10 +26,10 @@ def read_dict_file(file_path):
 
 
 def read_followers(file_path):
-    file_array = csv.reader(open(file_path,"r"))
+    file_array = open(file_path,"r")
     arr = []
     for line in file_array:
-        arr.append(line[0])
+        arr.append(line.replace("\n",""))
 
     return arr
 
@@ -176,3 +176,8 @@ def first_boot(bot):
     if ans is 'y':
         bot.unfollow_non_followers()
     print("all done !")
+
+
+
+if __name__ == '__main__':
+    print(read_followers(file_path=base_path+"follow.txt"))

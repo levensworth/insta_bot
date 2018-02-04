@@ -151,7 +151,7 @@ def follow_file(bot, follow_file):
                 write_blacklist(user,bot)
     except Exception as e:
         print(e)
-        write_exception(e + " follow_file()")
+        write_exception(str(e) + " follow_file()")
         return False
 
 
