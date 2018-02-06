@@ -34,12 +34,13 @@ def read_followers(file_path):
     return arr
 
 def read_hashtags(file_path):
-    file_array = csv.reader(open(file_path,"r"))
+    file_array = open(file_path,"r")
     arr = []
     for line in file_array:
-        arr.append(line[0])
+        arr.append(line.replace("\n",""))
 
     return arr
+
 
 def write_file(file_path,array, delimiter="\n"):
     try:
