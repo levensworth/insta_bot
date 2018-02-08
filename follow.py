@@ -34,11 +34,13 @@ def freeze_following(bot):
 
 def follow_hashtag(bot, hashtag, follow_followers):
     hashtag_users = bot.get_hashtag_users(hashtag)
+    used_users = get_all_bot_users()
     try:
         if follow_followers:
             for user in hashtag_users:
                 if not follow_user_followers(bot,user_id=user):
                     write_blacklist(bot.get_username_from_userid(user),bot)
+        hashtag_users = list(set(hashtag_users) - set(used_users))
         bot.follow_users(hashtag_users)
         return True
     except Exception as e:
@@ -51,7 +53,7 @@ like_after_follow=False, follow_followers=False):
 
     bot.searchLocation(new_location)
     finded_location = bot.LastJson['items'][0]
-
+    used_users = get_all_bot_users()
     counter = 0
     max_id = ''
     with tqdm(total=amount) as pbar:
@@ -62,7 +64,7 @@ like_after_follow=False, follow_followers=False):
                 for media in bot.filter_medias(location_feed["items"][:amount], quiet=True):
                     if contains_hashtag(bot.get_media_info(media), hashtag):
                         user = bot.get_media_owner(media)
-                        if bot.follow(user):
+                        if not(user in used_users) and  bot.follow(user):
                             print( "user is " + str(user))
                             if like_after_follow:
                                 like_last_media(bot, user = user)
@@ -91,8 +93,9 @@ def contains_hashtag(media, hashtag):
 def follow_per_location(bot, new_location, amount=0, follow_followers=False, like_after_follow = False):
 
     bot.searchLocation(new_location)
-    finded_location = bot.LastJson['items'][0]
 
+    finded_location = bot.LastJson['items'][0]
+    used_users = get_all_bot_users()
     counter = 0
     max_id = ''
     with tqdm(total=amount) as pbar:
@@ -101,8 +104,7 @@ def follow_per_location(bot, new_location, amount=0, follow_followers=False, lik
                 location_feed = bot.LastJson
                 for media in bot.filter_medias(location_feed["items"][:amount], quiet=True):
                     user = bot.get_media_owner(media)
-                    if bot.follow(user):
-                        print( "user is " + str(user))
+                    if not (user in used_users) and bot.follow(user):
                         if like_after_follow:
                             like_last_media(bot, user = user)
                         if follow_followers:
@@ -126,9 +128,13 @@ def follow_per_location(bot, new_location, amount=0, follow_followers=False, lik
 def follow_user_followers(bot,username=None, user_id=None):
     before =  len(bot.get_user_following(bot.user_id))
     if user_id is None:
-        bot.follow_followers(user_id=bot.get_userid_from_username(username))
+        users = bot.get_user_followers(user_id= bot.get_userid_from_username(username=username))
+        user = list(set(users) - set(get_all_bot_users()))
+        bot.follow_users(users)
     else:
-        bot.follow_followers(user_id=user_id)
+        users = bot.get_user_followers(user_id= user_id)
+        user = list(set(users) - set(get_all_bot_users()))
+        bot.follow_users(users)
 
     after = len(bot.get_user_following(bot.user_id))
     if (int(before)+minimum) <= after:
@@ -198,4 +204,4 @@ def follow_per_location_file(bot, max_following_amount, locations_file, like_aft
         for location in locations:
             follow_per_location(bot,new_location=location, amount=max_following_amount, like_after_follow=like_after_follow)
     except Exception as e:
-        write_exception(str(e)+ " from follow_per_location")
+        write_exception(str(e)+ " from follow_per_location_file")

@@ -116,8 +116,8 @@ class UserBot(object):
     def unfollow_non_followers(self):
         unfollow_non_followers(self.bot)
 
-    def unfollow_from_file(self):
-        unfollow_from_file(self.bot, blacklist_path)
+    def unfollow_intercated_users(self):
+        unfollow_intercated_users(self.bot, blacklist_path)
 
     def get_random_timeline_comment(self, path):
         try:
@@ -203,7 +203,7 @@ def job_5():
     bot.unfollow_non_followers()
 
 def job_6():
-    bot.unfollow_from_file()
+    bot.unfollow_intercated_users()
 
 def job_7():
     bot.follow_per_location_file()
@@ -237,11 +237,11 @@ schedule.every(1).days.at("16:00").do(job_6)
 schedule.every(1).days.at("23:00").do(job_5)
 schedule.every(1).hours.do(job_8)
 schedule.every(30).minutes.do(job_7)
-
+schedule.every(1).days.at("23:59").do(time.sleep(seconds=21600))
 
 if __name__ == '__main__':
     setup(bot)
-    
+
     while True:
         schedule.run_pending()
         time.sleep(1)

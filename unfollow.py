@@ -9,16 +9,17 @@ def unfollow_non_followers(bot):
     bot.unfollow_non_followers()
     update_blacklist(bot,unfollow_file)
 
-def unfollow_from_file(bot,path ):
-    unfollow_list = read_list_file(path)
+def unfollow_intercated_users(bot,path ):
+    unfollow_list = get_all_bot_users()
     try:
         bot.unfollow_users(unfollow_list)
         for user_id in unfollow_list:
             write_blacklist(username=bot.get_username_from_userid(str(user_id)), bot=bot)
 
+        update_blacklist(unfollow_file=unfollow_file)
         bot.add_blacklist(blacklist_file)
     except Exception as e:
-        write_exception(str(e) + " from unfollow_from_file")
+        write_exception(str(e) + " from unfollow_intercated_users")
         return False
 
 def update_blacklist(bot, unfollow_file):

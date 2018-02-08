@@ -1,2 +1,2 @@
 follow_amount,follow_time,like_amount,like_time,min_followers_to_follow,max_followers_to_follow,max_following_to_follow,min_followers_to_follow,max_followers_to_following_ratio,max_following_to_followers_ratio,min_media_count_to_follow
-30,9,30,7,10,2000,2000,10,10,2,3
+45,5,30,7,1,2000,2000,1,1000,2000,3

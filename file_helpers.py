@@ -149,6 +149,14 @@ def read_locations(filepath):
         return []
 
 
+def get_all_bot_users():
+    ''' this will return a list of users with which the bot interacted '''
+    followed = read_list_file(path="followed.txt")
+    skipped = read_list_file(path="skipped.txt")
+
+    return list(followed + skipped)
+
+
 def setup(bot):
     print("welcome to Mana growth instabot.... created by levesnworth")
     print("will run a few checks...")
