@@ -124,23 +124,30 @@ def follow_per_location(bot, new_location, amount=0, follow_followers=False, lik
     return True
 
 
-
 def follow_user_followers(bot,username=None, user_id=None):
-    before =  len(bot.get_user_following(bot.user_id))
     if user_id is None:
         users = bot.get_user_followers(user_id= bot.get_userid_from_username(username=username))
         user = list(set(users) - set(get_all_bot_users()))
-        bot.follow_users(users)
+        for account in user:
+            if bot.follow(account):
+                write_blacklist(account, bot)
+
+        if len(user) is 0:
+            return False
+
     else:
         users = bot.get_user_followers(user_id= user_id)
         user = list(set(users) - set(get_all_bot_users()))
         bot.follow_users(users)
+        for account in user:
+            if bot.follow(account):
+                write_blacklist(account, bot)
 
-    after = len(bot.get_user_following(bot.user_id))
-    if (int(before)+minimum) <= after:
-        return True
-    else:
-        return False
+        if len(user) is 0:
+            return False
+
+    return True
+
 
 
 def follow_file(bot, follow_file):

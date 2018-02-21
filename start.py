@@ -11,7 +11,7 @@ from mailer import send_notification
 from like import *
 from follow import *
 from comment import *
-from stat import *
+from stats import *
 from unfollow import *
 
 base_path = "./storage/"
@@ -73,7 +73,6 @@ class UserBot(object):
             self.all_comments_number = get_size(self.all_comments)
         if whitelist is not None:
             self.add_whiteList(whitelist)
-        print(self.bot.user_id)
 
     def get_config(self):
         return self.config
@@ -116,8 +115,8 @@ class UserBot(object):
     def unfollow_non_followers(self):
         unfollow_non_followers(self.bot)
 
-    def unfollow_intercated_users(self):
-        unfollow_intercated_users(self.bot, blacklist_path)
+    def unfollow_interacted_users(self):
+        unfollow_interacted_users(self.bot, blacklist_path)
 
     def get_random_timeline_comment(self, path):
         try:
@@ -180,6 +179,7 @@ class UserBot(object):
 
     def save_user_stats(self):
         self.bot.save_user_stats(self.bot.username)
+        save_user_growth(self.bot)
 
     def generate_report_for_user(self):
         generate_report_for_user(self.bot)
@@ -191,7 +191,7 @@ def job_1():
     bot.freeze_following()
 
 def job_2( ):
-    bot.follow_hashtag_file()
+    bot.follow_hashtag_per_location_file()
 
 def job_3():
     bot.like_location_feed_file()
@@ -203,7 +203,7 @@ def job_5():
     bot.unfollow_non_followers()
 
 def job_6():
-    bot.unfollow_intercated_users()
+    bot.unfollow_interacted_users()
 
 def job_7():
     bot.follow_per_location_file()
@@ -212,6 +212,9 @@ def job_8():
     bot.like_user_feed(amount=9)
 def job_9():
     bot.follow_file()
+
+def job_sleep():
+    time.sleep(2000)
 
 
 
@@ -236,8 +239,10 @@ schedule.every(45).minutes.do(job_9)
 schedule.every(1).days.at("16:00").do(job_6)
 schedule.every(1).days.at("23:00").do(job_5)
 schedule.every(1).hours.do(job_8)
+schedule.every(23).hours.do(job_sleep)
 schedule.every(30).minutes.do(job_7)
-schedule.every(1).days.at("23:59").do(time.sleep(seconds=21600))
+
+
 
 if __name__ == '__main__':
     setup(bot)
