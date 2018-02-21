@@ -12,11 +12,21 @@ def unfollow_non_followers(bot):
 def unfollow_interacted_users(bot,path ):
     unfollow_list = get_all_bot_users()
     try:
+        counter = 0
+        you_are_banned = False
+        unfollowed = []
         for user in unfollow_list:
-            while not bot.unfollow(user):
-                pass
-        
-        for user_id in unfollow_list:
+
+            while not bot.unfollow(user) and not you_are_banned:
+                counter = counter +1
+                if counter > MAX_ERROR:
+                    you_are_banned = True
+
+            unfollowed.append(user)
+            if you_are_banned:
+                break
+
+        for user_id in unfollowed:
             write_blacklist(username=bot.get_username_from_userid(str(user_id)), bot=bot)
 
         update_blacklist(unfollow_file=unfollow_file)
