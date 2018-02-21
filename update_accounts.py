@@ -9,7 +9,7 @@ def transfer_all_files(list_of_files=[], root_dest="."):
 
 
 accounts = read_list_file("../accounts.txt")
-files_to_cpy=["comment.py" ,"follow.py" ,"unfollow.py" ,"file_bot.py" ,"file_helpers.py" ,"like.py" ,"mailer.py" ,"stats.py"]
+files_to_cpy=["comment.py" ,"follow.py" ,"unfollow.py" ,"start.py" ,"file_helpers.py" ,"like.py" ,"mailer.py" ,"stats.py"]
 for account in accounts:
     transfer_all_files(files_to_cpy, account)
 print("done")
