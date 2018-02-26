@@ -151,8 +151,14 @@ def read_locations(filepath):
 
 def get_all_bot_users():
     ''' this will return a list of users with which the bot interacted '''
-    followed = read_list_file(path="followed.txt")
-    skipped = read_list_file(path="skipped.txt")
+    try:
+        followed = read_list_file(path="followed.txt")
+    except Exception:
+        followed = []
+    try:
+        skipped = read_list_file(path="skipped.txt")
+    except Exception:
+        skipped = []
 
     return list(followed + skipped)
 

@@ -2,6 +2,8 @@ from file_helpers import *
 unfollow_file = "unfollow.txt"
 blacklist_file = "storage/blacklist.txt"
 
+MAX_ERROR = 7
+
 def unfollow_all(bot):
     bot.unfollow_everyone()
 
@@ -22,9 +24,10 @@ def unfollow_interacted_users(bot,path ):
                 if counter > MAX_ERROR:
                     you_are_banned = True
 
-            unfollowed.append(user)
             if you_are_banned:
                 break
+
+            unfollowed.append(user)
 
         for user_id in unfollowed:
             write_blacklist(username=bot.get_username_from_userid(str(user_id)), bot=bot)
