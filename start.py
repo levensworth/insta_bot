@@ -218,6 +218,21 @@ def job_sleep():
 
 
 
+
+def follow_day():
+    for lapse in range(0,30):
+        bot.follow_file()
+        bot.like_user_feed(amount=10)
+        time.sleep(random.randint(1,120))
+        bot.follow_hashtag_per_location_file()
+
+def unfollow_day():
+    for lapse in range(0,30):
+        bot.unfollow_interacted_users()
+        bot.like_user_feed(amount = 10)
+        time.sleep(random.randint(1,120))
+
+
 bot = UserBot(timeline_comment_path= base_path+'comments.txt',
                 all_comments=base_path+"comments.txt",
                 follow_followers= True,
@@ -232,7 +247,7 @@ bot = UserBot(timeline_comment_path= base_path+'comments.txt',
 
 
 
-
+'''
 schedule.every(1).hours.do(job_4)
 schedule.every(30).minutes.do(job_2)
 schedule.every(45).minutes.do(job_9)
@@ -240,7 +255,16 @@ schedule.every(18).hours.do(job_6)
 schedule.every(1).hours.do(job_8)
 schedule.every(23).hours.do(job_sleep)
 schedule.every(30).minutes.do(job_7)
+'''
 
+
+schedule.every().monday.do(unfollow_day)
+schedule.every().tuesday.do(follow_day)
+schedule.every().wednesday.do(follow_day)
+schedule.every().thursday.do(unfollow_day)
+schedule.every().friday.do(follow_day)
+schedule.every().saturday.do(unfollow_day)
+schedule.every().sunday.do(follow_day)
 
 
 if __name__ == '__main__':
