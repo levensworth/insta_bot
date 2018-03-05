@@ -236,8 +236,7 @@ bot = UserBot(timeline_comment_path= base_path+'comments.txt',
 schedule.every(1).hours.do(job_4)
 schedule.every(30).minutes.do(job_2)
 schedule.every(45).minutes.do(job_9)
-schedule.every(1).days.at("16:00").do(job_6)
-schedule.every(1).days.at("23:00").do(job_5)
+schedule.every(18).hours.do(job_6)
 schedule.every(1).hours.do(job_8)
 schedule.every(23).hours.do(job_sleep)
 schedule.every(30).minutes.do(job_7)
@@ -245,8 +244,7 @@ schedule.every(30).minutes.do(job_7)
 
 
 if __name__ == '__main__':
-    #setup(bot)
-    job_4()
+    setup(bot)
     while True:
         schedule.run_pending()
         time.sleep(1)
