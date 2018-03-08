@@ -220,17 +220,17 @@ def job_sleep():
 
 
 def follow_day():
-    for lapse in range(0,30):
+    for lapse in range(0,15):
         bot.follow_file()
         bot.like_user_feed(amount=10)
-        time.sleep(random.randint(1,120))
+        time.sleep(random.randint(45,1200))
         bot.follow_hashtag_per_location_file()
 
 def unfollow_day():
-    for lapse in range(0,30):
+    for lapse in range(0,15):
         bot.unfollow_interacted_users()
         bot.like_user_feed(amount = 10)
-        time.sleep(random.randint(1,120))
+        time.sleep(random.randint(45,1200))
 
 
 bot = UserBot(timeline_comment_path= base_path+'comments.txt',
