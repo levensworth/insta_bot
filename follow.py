@@ -11,6 +11,10 @@ from like import *
 base_path = "./storage/"
 minimum = 1
 
+num_error = 0
+MAX_ERRORS = 8
+REST_TIME = 3600 * 4 # 3600 sec is an hour and them multiply by the amount of hours to sleep
+
 def freeze_following(bot):
     ''' make a Whitelist with all your current following accounts'''
     your_following = bot.get_user_following(bot.user_id)
@@ -128,23 +132,23 @@ def follow_user_followers(bot,username=None, user_id=None):
     if user_id is None:
         users = bot.get_user_followers(user_id= bot.get_userid_from_username(username=username))
         user = list(set(users) - set(get_all_bot_users()))
-        for account in user:
-            if bot.follow(account):
-                write_blacklist(account, bot)
-
-        if len(user) is 0:
-            return False
 
     else:
         users = bot.get_user_followers(user_id= user_id)
         user = list(set(users) - set(get_all_bot_users()))
-        bot.follow_users(users)
-        for account in user:
-            if bot.follow(account):
-                write_blacklist(account, bot)
 
-        if len(user) is 0:
-            return False
+
+    for account in user:
+        if bot.follow(account):
+            write_blacklist(account, bot)
+        else:
+            num_error = num_error +1
+            if num_error >= MAX_ERRORS:
+                num_error = 0
+                time.sleep(REST_TIME)
+
+    if len(user) is 0:
+        return False
 
     return True
 
@@ -152,7 +156,7 @@ def follow_user_followers(bot,username=None, user_id=None):
 
 def follow_file(bot, follow_file):
     if follow_file is None:
-        return True
+        return False
     try:
         follow_list = read_followers(follow_file)
         if len(follow_list) < 1:
