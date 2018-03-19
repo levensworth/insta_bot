@@ -263,12 +263,13 @@ schedule.every().saturday.do(unfollow_day)
 schedule.every().sunday.do(follow_day)
 '''
 
+schedule.every(1).day.do(day)
+
 if __name__ == '__main__':
-    #setup(bot)
+    setup(bot)
     day()
 
-'''
+
     while True:
         schedule.run_pending()
         time.sleep(1)
-'''
